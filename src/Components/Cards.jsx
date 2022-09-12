@@ -44,6 +44,7 @@ const Container = styled.div`
       padding-bottom: 1rem;
       img{
         width: 17rem;
+        height: 10rem;
         filter: brightness(50%);
       }
       .author{
