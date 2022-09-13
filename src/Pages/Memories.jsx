@@ -15,7 +15,7 @@ export default function Memories() {
     if (!currentUser) {
       navigate("/");
     }
-  })
+  });
   return (
     <Container>
       <Navbar status={"logout"} />

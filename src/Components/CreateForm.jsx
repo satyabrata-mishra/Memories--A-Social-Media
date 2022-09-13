@@ -1,7 +1,13 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { onAuthStateChanged } from 'firebase/auth';
+import { firebaseAuth } from "../Utils/firebase-config";
 
 export default function CreateForm() {
+    const [userDetails, setuserDetails] = useState({
+        name: "",
+        email: ""
+    });
     const [details, setdetails] = useState({
         title: "",
         message: "",
@@ -14,8 +20,19 @@ export default function CreateForm() {
     const handleImageChange = (e) => {
         setdetails({ ...details, [e.target.name]: e.target.files[0] });
     };
+    useEffect(() => {
+        onAuthStateChanged(firebaseAuth, (currentUser) => {
+            if (currentUser) {
+                setuserDetails({
+                    name: currentUser.displayName,
+                    email: currentUser.email
+                });
+            }
+        });
+    }, [])
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log(userDetails);
         console.log(details);
         setdetails({
             title: "",

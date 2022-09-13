@@ -2,7 +2,14 @@ import React, { useState } from 'react'
 import styled from 'styled-components';
 import Navbar from '../Components/Navbar';
 import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineGoogle, AiFillLock } from 'react-icons/ai';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  updateProfile,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider
+} from 'firebase/auth';
 import { firebaseAuth } from '../Utils/firebase-config';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +38,12 @@ export default function Signup() {
     e.preventDefault();
     if (credentials.password === credentials.repeatpassword) {
       try {
-        await createUserWithEmailAndPassword(firebaseAuth, credentials.email, credentials.password)
+        await createUserWithEmailAndPassword(firebaseAuth, credentials.email, credentials.password).then(() => {
+          const auth = getAuth();
+          updateProfile(auth.currentUser, {
+            displayName: credentials.name
+          });
+        });
         navigate("/memories");
       } catch (error) {
         alert(error.message);
@@ -47,7 +59,7 @@ export default function Signup() {
   };
   onAuthStateChanged(firebaseAuth, (currentUser) => {
     if (currentUser) {
-      navigate("/memories");
+        navigate("/memories");
     }
   });
   return (

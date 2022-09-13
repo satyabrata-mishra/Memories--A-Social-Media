@@ -8,7 +8,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 
 
 export default function Navbar({ status }) {
-    const [name, setname] = useState("");
+    const [name, setname] = useState(" ");
     const navigate = useNavigate();
     const handleClick = () => {
         if (status === "createaccount")
@@ -19,11 +19,13 @@ export default function Navbar({ status }) {
     const handleLogoutClick = () => {
         signOut(firebaseAuth);
     };
-    onAuthStateChanged(firebaseAuth, (currentUser) => {
-        if (currentUser) {
-            setname(currentUser.email);
-        }
-    });
+    setTimeout(() => {
+        onAuthStateChanged(firebaseAuth, (currentUser) => {
+            if (currentUser) {
+                setname(currentUser.displayName);
+            }
+        });
+    }, 1000);
     return (
         <Container>
             <nav>
