@@ -121,6 +121,9 @@ const Container = styled.div`
           border-radius: 3px;
           padding: 0 1rem;
           margin: 0.4rem 0;
+          &:hover{
+            border: 1px solid black;
+          }
         }
         .showpassword{
           position: relative;
@@ -149,6 +152,10 @@ const Container = styled.div`
           background-color: blueviolet;
           color: white;
           margin-top: -1rem;
+          &:hover{
+            background-color: #7235ab;
+            transition: 0.2s ease-in;
+          }
         }
         .googlesignin{
           width: 18rem;
@@ -162,6 +169,10 @@ const Container = styled.div`
           display: flex;
           justify-content: center;
           align-items: center;
+          &:hover{
+            background-color: #7235ab;
+            transition: 0.2s ease-in;
+          }
           svg{
             font-size: 1.3rem;
             margin: 0 0.3rem;

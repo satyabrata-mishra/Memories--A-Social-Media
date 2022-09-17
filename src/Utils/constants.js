@@ -1,0 +1,1 @@
+export const host = "https://blog-website0.herokuapp.com";

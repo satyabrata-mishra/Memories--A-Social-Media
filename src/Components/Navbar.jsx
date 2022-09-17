@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import memories from '../Images/memories.png';
 import logo from '../Images/logo.png';
@@ -8,7 +8,10 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 
 
 export default function Navbar({ status }) {
-    const [name, setname] = useState(" ");
+    const [userDetails, setuserDetails] = useState({
+        name: "",
+        image: ""
+    });
     const navigate = useNavigate();
     const handleClick = () => {
         if (status === "createaccount")
@@ -18,14 +21,18 @@ export default function Navbar({ status }) {
     };
     const handleLogoutClick = () => {
         signOut(firebaseAuth);
+        navigate("/");
     };
-    setTimeout(() => {
+    useEffect(() => {
         onAuthStateChanged(firebaseAuth, (currentUser) => {
             if (currentUser) {
-                setname(currentUser.displayName);
+                setuserDetails({
+                    name: currentUser.displayName,
+                    image: currentUser.photoURL
+                });
             }
         });
-    }, 1000);
+    }, [])
     return (
         <Container>
             <nav>
@@ -34,8 +41,9 @@ export default function Navbar({ status }) {
                     <img src={logo} alt="logo" />
                 </div>
                 <div className='left'>
-                    {status === "logout" ? <button className='leftbutton'>{name.charAt(0).toUpperCase()}</button> : ""}
-                    {status === "logout" ? <p>{name}</p> : ""}
+                    {status === "logout" && !userDetails.image ? <button className='leftbutton'>{userDetails.name.charAt(0).toUpperCase()}</button> : ""}
+                    {userDetails.image ? <img src={userDetails.image} alt="Not Avaliable" /> : ""}
+                    {status === "logout" ? <p>Welcome, {userDetails.name.indexOf(" ")!==-1?userDetails.name.substring(0,userDetails.name.indexOf(" ")):userDetails.name}</p> : ""}
                     {status === "createaccount" ? <button onClick={handleClick} className='rightbutton'>SIGN UP</button> : ""}
                     {status === "login" ? <button onClick={handleClick} className='rightbutton'>LOGIN</button> : ""}
                     {status === "logout" ? <button onClick={handleLogoutClick} className='rightbutton'>LOGOUT</button> : ""}
@@ -70,6 +78,10 @@ const Container = styled.div`
             justify-content: center;
             align-items: center;
             margin-right: 2.4rem;
+            img{
+                height: 2.5rem;
+                border-radius: 50%;
+            }
             .leftbutton{
                 border-radius: 50%;
                 background-color: red;
@@ -89,6 +101,12 @@ const Container = styled.div`
                 border-radius: 0.2rem;
                 border: none;
                 cursor: pointer;
+            }
+            .rightbutton:nth-child(3){
+                transition: 0.2s ease-in;
+                &:hover{
+                    background-color: red;
+                }
             }
         }
     }

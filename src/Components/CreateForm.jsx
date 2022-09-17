@@ -2,23 +2,21 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth } from "../Utils/firebase-config";
+import { host } from '../Utils/constants';
 
-export default function CreateForm() {
+export default function CreateForm({fetchAllData,isUpdate=false}) {
     const [userDetails, setuserDetails] = useState({
         name: "",
         email: ""
     });
     const [details, setdetails] = useState({
-        title: "",
-        message: "",
-        tags: "",
-        photos: null
+        locationName: "",
+        locationDesp: "",
+        location: "",
+        imageURL: ""
     });
     const handleChange = (e) => {
         setdetails({ ...details, [e.target.name]: e.target.value });
-    };
-    const handleImageChange = (e) => {
-        setdetails({ ...details, [e.target.name]: e.target.files[0] });
     };
     useEffect(() => {
         onAuthStateChanged(firebaseAuth, (currentUser) => {
@@ -30,35 +28,55 @@ export default function CreateForm() {
             }
         });
     }, [])
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(userDetails);
-        console.log(details);
-        setdetails({
-            title: "",
-            message: "",
-            tags: "",
-            photos: null
-        });
+        try {
+            const response = await fetch(`${host}/posts/createpost`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    email:userDetails.email,
+                    author: userDetails.name.replace(/\s+/g, ' ').trim(),
+                    locationName: details.locationName,
+                    locationDesp: details.locationDesp,
+                    location: details.location,
+                    imageURL: details.imageURL
+                 })
+            });
+            const json = await response.json();
+            console.log(json);
+            setdetails({
+                locationName: "",
+                locationDesp: "",
+                location: "",
+                imageURL: ""
+            });
+            fetchAllData();
+        } catch (error) {
+            console.log(error.message);
+        }
     };
     const handleClear = (e) => {
         e.preventDefault();
         setdetails({
-            title: "",
-            message: "",
-            tags: "",
-            photos: null
+            locationName: "",
+            locationDesp: "",
+            location: "",
+            imageURL: ""
         });
     }
     return (
         <Container>
             <form>
                 <p>Creating A Memory</p>
-                <input value={details.title} onChange={handleChange} type="text" name="title" placeholder='Title' />
-                <textarea value={details.message} onChange={handleChange} name="message" cols="30" rows="10" placeholder='Message'></textarea>
-                <input value={details.tags} onChange={handleChange} type="text" name="tags" placeholder='Tags' />
-                <input type="file" name='photos' className='image' onChange={handleImageChange} />
-                <button className='submit' onClick={handleSubmit}>SUBMIT</button>
+                <input value={details.locationName} onChange={handleChange} type="text" name="locationName" placeholder='Loaction Name i.e: Nigra Falls' />
+                <textarea value={details.locationDesp} onChange={handleChange} name="locationDesp" cols="30" rows="10" placeholder='Description'></textarea>
+                <input value={details.location} onChange={handleChange} type="text" name="location" placeholder='Location i.e: State, Country' />                
+                <input value={details.imageURL} onChange={handleChange} type="text" name="imageURL" placeholder='Location Image URL' />
+                <button className='submit' onClick={handleSubmit}>UPLOAD</button>
                 <button className='clear' onClick={handleClear}>CLEAR</button>
             </form>
         </Container>

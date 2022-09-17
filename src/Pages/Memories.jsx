@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Navbar from '../Components/Navbar';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -6,14 +6,43 @@ import { firebaseAuth } from '../Utils/firebase-config';
 import { useNavigate } from 'react-router-dom';
 import Cards from '../Components/Cards';
 import CreateForm from '../Components/CreateForm';
-import kilimangaro from '../Images/kilimanjaro.jpg';
+import { host } from '../Utils/constants';
 
 
 export default function Memories() {
   const navigate = useNavigate();
+  const [userDetails, setuserDetails] = useState({
+    name:"",
+    email:""
+  });
+  const [allMemories, setallMemories] = useState([]);
+  useEffect(() => {
+    fetchAllData();
+  }, [])
+
+  async function fetchAllData() {
+    try {
+      const response = await fetch(`${host}/posts/getallposts`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json = await response.json();
+      setallMemories(json);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   onAuthStateChanged(firebaseAuth, (currentUser) => {
     if (!currentUser) {
       navigate("/");
+    } else{
+      setuserDetails({
+        name:currentUser.displayName,
+        email:currentUser.email
+      });
     }
   });
   return (
@@ -22,20 +51,29 @@ export default function Memories() {
       <div className="content">
         <div className="leftgrid">
           <div className="cards">
-            <Cards
-            image={kilimangaro}
-            authorName={"Satyabrata Mishra"}
-            timeSpan ={"6 hours ago"}
-            tags={"kilimangaro"}
-            name={"Mount Kilimanjaro"}
-            desc={"In contrast to the persistent slope glaciers, the glaciers on Kilimanjaro's crater plateau have appeared and disappeared repeatedly during the Holocene epoch, with each cycle lasting a few hundred years.[36]: 1088  It appears that decreasing specific humidity instead of temperature changes has caused the shrinkage of the slope glaciers since the late 19th century. No clear warming trend at the elevation of those glaciers occurred between 1948 and 2005"}
-            isLiked={false}
-            noOfLikes={0}
-             />
+            {
+              allMemories.slice(0).reverse().map((memories, index) => {
+                return (<Cards
+                  key={index}
+                  id={memories._id}
+                  fetchAllData={fetchAllData}
+                  showDelete={memories.email===userDetails.email}
+                  email={userDetails.email}
+                  image={memories.imageURL}
+                  authorName={memories.author}
+                  timeSpan={memories.createdAt}
+                  tags={memories.location}
+                  name={memories.locationName}
+                  desc={memories.locationDesp}
+                  isLiked={memories.peopleLiked.indexOf(userDetails.email)===-1?false:true}
+                  noOfLikes={memories.likedCount}
+                />)
+              })
+            }
           </div>
         </div>
         <div className="rightgrid">
-          <CreateForm />
+          <CreateForm fetchAllData={fetchAllData} />
         </div>
       </div>
     </Container>
