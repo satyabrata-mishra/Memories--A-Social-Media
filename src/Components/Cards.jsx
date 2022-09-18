@@ -235,6 +235,11 @@ justify-content: space-around;
   flex-direction: column;
   padding-left:0.5rem;
   padding-top: 0.6rem;
+  @media only screen and (max-width: 600px){
+    margin-right:4rem;
+    margin-bottom: 0.5rem;
+    margin-top: -1rem;
+  }
         input{
             height: 2rem;
             width: 14rem;

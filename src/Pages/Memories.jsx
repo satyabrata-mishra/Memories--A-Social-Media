@@ -85,7 +85,15 @@ const Container = styled.div`
       width: 100vw;
       display: grid;
       grid-template-columns: 75% 25%;
+      @media only screen and (max-width: 600px){
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column-reverse;
+      }
       .leftgrid{
+        @media only screen and (max-width: 600px){
+           margin-right : 1.6rem;
+          }
         .cards{
           display: flex;
           flex-wrap: wrap;

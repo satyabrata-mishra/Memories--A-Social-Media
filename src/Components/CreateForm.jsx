@@ -86,14 +86,21 @@ const Container = styled.div`
 margin: 0 1rem;
 box-shadow: 0px 0px 10px gray;
 text-align: center;
-    p{
-        font-weight: 600;
-    }
+@media only screen and (max-width: 600px){
+    width:17rem ;
+    margin-bottom: 1rem;
+}
     form{
         display: flex;
         flex-direction: column;
         padding-left:0.5rem;
         padding-bottom: 0.6rem;
+        @media only screen and (max-width: 600px){
+            
+        }
+        p{
+            font-weight: 600;
+        }
         input{
             height: 2rem;
             width: 15rem;
