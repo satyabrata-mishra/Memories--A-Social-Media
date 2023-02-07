@@ -12,8 +12,8 @@ import { host } from '../Utils/constants';
 export default function Memories() {
   const navigate = useNavigate();
   const [userDetails, setuserDetails] = useState({
-    name:"",
-    email:""
+    name: "",
+    email: ""
   });
   const [allMemories, setallMemories] = useState([]);
   useEffect(() => {
@@ -35,16 +35,18 @@ export default function Memories() {
       console.log(error.message);
     }
   };
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (!currentUser) {
-      navigate("/");
-    } else{
-      setuserDetails({
-        name:currentUser.displayName,
-        email:currentUser.email
-      });
-    }
-  });
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (currentUser) => {
+      if (!currentUser) {
+        navigate("/");
+      } else {
+        setuserDetails({
+          name: currentUser.displayName,
+          email: currentUser.email
+        });
+      }
+    });
+  }, []);
   return (
     <Container>
       <Navbar status={"logout"} />
@@ -57,7 +59,7 @@ export default function Memories() {
                   key={index}
                   id={memories._id}
                   fetchAllData={fetchAllData}
-                  showDelete={memories.email===userDetails.email}
+                  showDelete={memories.email === userDetails.email}
                   email={userDetails.email}
                   image={memories.imageURL}
                   authorName={memories.author}
@@ -65,8 +67,9 @@ export default function Memories() {
                   tags={memories.location}
                   name={memories.locationName}
                   desc={memories.locationDesp}
-                  isLiked={memories.peopleLiked.indexOf(userDetails.email)===-1?false:true}
+                  isLiked={memories.peopleLiked.indexOf(userDetails.email) === -1 ? false : true}
                   noOfLikes={memories.likedCount}
+                  noOfComments={memories.comments.length/2}
                 />)
               })
             }

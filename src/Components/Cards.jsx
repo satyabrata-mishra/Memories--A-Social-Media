@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { AiOutlineLike, AiFillLike, AiOutlineDelete } from 'react-icons/ai';
+import {FcComments} from 'react-icons/fc'
 import { FiEdit } from 'react-icons/fi';
 import { GoLocation } from 'react-icons/go';
 import { host } from '../Utils/constants';
+import { useNavigate } from 'react-router-dom';
 
-export default function Cards({ id, email, fetchAllData, showDelete, image, authorName, timeSpan, tags, name, desc, isLiked, noOfLikes }) {
+export default function Cards({ id, email, fetchAllData, showDelete, image, authorName, timeSpan, tags, name, desc, isLiked, noOfLikes,noOfComments }) {
+  const navigate = useNavigate();
   const [showFull, setshowFull] = useState(true);
   const [editForm, seteditForm] = useState(false);
   const [details, setdetails] = useState({
@@ -94,9 +97,13 @@ export default function Cards({ id, email, fetchAllData, showDelete, image, auth
     }
   };
 
+  const handleClick=()=>{
+    localStorage.setItem("id",id);
+    navigate("/comments");
+  };
   return (
     <Container>
-      <div className="card">
+      <div className="card" >
         <img src={image} alt="Not Avaliable" />
         <p className='author'>{authorName}</p>
         <p className='timespan'>{timeSpan}</p>
@@ -110,7 +117,7 @@ export default function Cards({ id, email, fetchAllData, showDelete, image, auth
           showFull
             ? <p className='like'>{isLiked ? <AiFillLike onClick={handleLike} />
               : <AiOutlineLike onClick={handleLike} />}
-              {noOfLikes} LIKE
+              {noOfLikes} LIKE  <FcComments onClick={handleClick} /> {noOfComments} COMMENTS
               <span className='edit'>{showDelete ? <FiEdit onClick={handleEdit} title="Click to edit this memory." /> : ""}</span>
               <span className='delete'>{showDelete ? <AiOutlineDelete onDoubleClick={handleDelete} title='Double click to delete this memory.' /> : ""}</span>
             </p> : ""
@@ -191,23 +198,22 @@ justify-content: space-around;
         color : #242323;
       }
       .like{
-        font-weight: 100;
+        font-weight: 600;
         font-size: 0.85rem;
         margin: 0 0 0 1rem;
         position: relative;
         top: 1rem;
-        color : black;
         user-select: none;
         svg{
           font-size: 1.4rem;
           position: relative;
-          top: 0.2rem;
+          top: 0.3rem;
           cursor: pointer;
         }
         .delete{
           svg{
             position: relative;
-            left: 9rem;
+            left: 2rem;
             font-size: 1.3rem;
             color: #6b6868;
             &:hover{
@@ -218,8 +224,8 @@ justify-content: space-around;
         .edit{
           svg{
             position: relative;
-            left: 8.5rem;
-            font-size: 1.3rem;
+            left: 1.8rem;
+            font-size: 1.2rem;
             color: #6b6868;
             &:hover{
               color: black;

@@ -34,6 +34,7 @@ export default function Signup() {
   const handleChange = (e) => {
     setcredentials({ ...credentials, [e.target.name]: e.target.value })
   };
+  
   const handleCreateAccount = async (e) => {
     e.preventDefault();
     if (credentials.password === credentials.repeatpassword) {
@@ -52,6 +53,7 @@ export default function Signup() {
       alert("Password doesn't match.")
     }
   };
+
   const handleGoogleCreateAccount = (e) => {
     e.preventDefault();
     const provider = new GoogleAuthProvider();

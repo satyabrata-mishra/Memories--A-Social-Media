@@ -1,1 +1,1 @@
-export const host = "https://blog-website0.herokuapp.com";
+export const host = "http://localhost:5000";
