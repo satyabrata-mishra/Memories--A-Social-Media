@@ -4,6 +4,7 @@ import Memories from './Pages/Memories';
 import Signup from './Pages/Signup';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Comments from './Pages/Comments';
+import Saved from './Pages/Saved';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/comments" element={<Comments />} />
+          <Route path="/saved" element={<Saved />} />
       </Routes>
     </BrowserRouter>
     </div>

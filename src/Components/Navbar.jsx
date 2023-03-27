@@ -57,7 +57,7 @@ const Container = styled.div`
         background-color: white;
         height: 5rem;
         width: 73rem;
-        margin: 1.8rem;
+        margin: 1rem 2rem;
         border-radius: 1rem;
         box-shadow: 0px 0px 10px grey;
         display: flex;

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth } from "../Utils/firebase-config";
 import { host } from '../Utils/constants';
+import { Link } from 'react-router-dom';
 
 export default function CreateForm({fetchAllData,isUpdate=false}) {
     const [userDetails, setuserDetails] = useState({
@@ -78,6 +79,7 @@ export default function CreateForm({fetchAllData,isUpdate=false}) {
                 <input value={details.imageURL} onChange={handleChange} type="text" name="imageURL" placeholder='Location Image URL' />
                 <button className='submit' onClick={handleSubmit}>UPLOAD</button>
                 <button className='clear' onClick={handleClear}>CLEAR</button>
+                <Link to="/saved">MY SAVED</Link>
             </form>
         </Container>
     )
@@ -142,6 +144,17 @@ text-align: center;
             border: none;
             outline: none;
             cursor: pointer;
+        }
+        a{
+            height: 1.5rem;
+            width: 16rem;
+            margin: 0.2rem 0;
+            background-color: gray;
+            color: white;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            text-decoration: none;
         }
     }
 `;
