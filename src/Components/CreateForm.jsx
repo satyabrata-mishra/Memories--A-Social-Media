@@ -5,7 +5,7 @@ import { firebaseAuth } from "../Utils/firebase-config";
 import { host } from '../Utils/constants';
 import { Link } from 'react-router-dom';
 
-export default function CreateForm({fetchAllData,isUpdate=false}) {
+export default function CreateForm({ fetchAllData, isUpdate = false }) {
     const [userDetails, setuserDetails] = useState({
         name: "",
         email: ""
@@ -31,6 +31,10 @@ export default function CreateForm({fetchAllData,isUpdate=false}) {
     }, [])
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!(details.imageURL || details.location || details.locationDesp || details.locationName)) {
+            alert("Fillup all the sections of the form.");
+            return;
+        }
         try {
             const response = await fetch(`${host}/posts/createpost`, {
                 method: 'POST',
@@ -38,14 +42,14 @@ export default function CreateForm({fetchAllData,isUpdate=false}) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    email:userDetails.email,
+                body: JSON.stringify({
+                    email: userDetails.email,
                     author: userDetails.name.replace(/\s+/g, ' ').trim(),
                     locationName: details.locationName,
                     locationDesp: details.locationDesp,
                     location: details.location,
                     imageURL: details.imageURL
-                 })
+                })
             });
             const json = await response.json();
             console.log(json);
@@ -75,7 +79,7 @@ export default function CreateForm({fetchAllData,isUpdate=false}) {
                 <p>Creating A Memory</p>
                 <input value={details.locationName} onChange={handleChange} type="text" name="locationName" placeholder='Loaction Name i.e: Nigra Falls' />
                 <textarea value={details.locationDesp} onChange={handleChange} name="locationDesp" cols="30" rows="10" placeholder='Description'></textarea>
-                <input value={details.location} onChange={handleChange} type="text" name="location" placeholder='Location i.e: State, Country' />                
+                <input value={details.location} onChange={handleChange} type="text" name="location" placeholder='Location i.e: State, Country' />
                 <input value={details.imageURL} onChange={handleChange} type="text" name="imageURL" placeholder='Location Image URL' />
                 <button className='submit' onClick={handleSubmit}>UPLOAD</button>
                 <button className='clear' onClick={handleClear}>CLEAR</button>

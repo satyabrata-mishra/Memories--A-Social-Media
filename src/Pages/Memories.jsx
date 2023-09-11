@@ -13,12 +13,20 @@ export default function Memories() {
   const navigate = useNavigate();
   const [userDetails, setuserDetails] = useState({
     name: "",
-    email: ""
+    email: "",
   });
   const [allMemories, setallMemories] = useState([]);
+  const [allPosts, setallPosts] = useState([]);
+
   useEffect(() => {
     fetchAllData();
   }, [])
+
+  useEffect(() => {
+    checkUserPresentOrNot(userDetails.email);
+    getAllPostsOfAnEmail(userDetails.email);
+  }, [userDetails])
+
 
   async function fetchAllData() {
     try {
@@ -32,9 +40,49 @@ export default function Memories() {
       const json = await response.json();
       setallMemories(json);
     } catch (error) {
-      console.log(error.message);
+      alert(error.message);
     }
   };
+
+  async function checkUserPresentOrNot(email) {
+    if (email === "") {
+      return;
+    }
+    try {
+      await fetch(`${host}/saved/user`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email
+        })
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function getAllPostsOfAnEmail(email) {
+    if (email === "") {
+      return;
+    }
+    try {
+      const response = await fetch(`${host}/saved/get/${email}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json = await response.json();
+      setallPosts(json);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (currentUser) => {
       if (!currentUser) {
@@ -69,7 +117,10 @@ export default function Memories() {
                   desc={memories.locationDesp}
                   isLiked={memories.peopleLiked.indexOf(userDetails.email) === -1 ? false : true}
                   noOfLikes={memories.likedCount}
-                  noOfComments={memories.comments.length/2}
+                  noOfComments={memories.comments.length / 2}
+                  saved={allPosts.indexOf(memories._id) === -1}
+                  calledFromSaved={false}
+                  removedFromPost={() => { }}
                 />)
               })
             }

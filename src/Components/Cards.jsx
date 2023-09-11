@@ -1,22 +1,39 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { AiOutlineLike, AiFillLike, AiOutlineDelete } from 'react-icons/ai';
-import {FcComments} from 'react-icons/fc'
+import { BsBookmarks, BsBookmarksFill } from 'react-icons/bs';
+import { FcComments } from 'react-icons/fc'
 import { FiEdit } from 'react-icons/fi';
 import { GoLocation } from 'react-icons/go';
 import { host } from '../Utils/constants';
 import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { firebaseAuth } from '../Utils/firebase-config';
 
-export default function Cards({ id, email, fetchAllData, showDelete, image, authorName, timeSpan, tags, name, desc, isLiked, noOfLikes,noOfComments }) {
+export default function Cards({ id, email, fetchAllData, showDelete, image, authorName, timeSpan, tags, name, desc, isLiked, noOfLikes, noOfComments, saved, calledFromSaved, removedFromPost }) {
   const navigate = useNavigate();
   const [showFull, setshowFull] = useState(true);
   const [editForm, seteditForm] = useState(false);
+  const [isSaved, setisSaved] = useState(saved);
   const [details, setdetails] = useState({
     locationName: name,
     locationDesp: desc,
     location: tags,
     imageURL: image
   });
+  const [currentUserEmail, setcurrentUserEmail] = useState("");
+
+  useEffect(() => {
+    setisSaved(saved);
+  }, [saved]);
+
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (currentUser) => {
+      if (currentUser) {
+        setcurrentUserEmail(currentUser.email);
+      }
+    });
+  }, []);
 
   const handleEdit = async () => {
     seteditForm(!editForm);
@@ -54,7 +71,7 @@ export default function Cards({ id, email, fetchAllData, showDelete, image, auth
       });
       fetchAllData();
     } catch (error) {
-      console.log(error.message);
+      alert(error.message);
     }
   };
 
@@ -69,7 +86,7 @@ export default function Cards({ id, email, fetchAllData, showDelete, image, auth
       });
       fetchAllData();
     } catch (error) {
-      console.log(error.message);
+      alert(error.message);
     }
   };
 
@@ -93,21 +110,46 @@ export default function Cards({ id, email, fetchAllData, showDelete, image, auth
       });
       fetchAllData();
     } catch (error) {
-      console.log(error.message);
+      alert(error.message);
     }
   };
 
-  const handleClick=()=>{
-    localStorage.setItem("id",id);
+  const handleClick = () => {
+    localStorage.setItem("id", id);
     navigate("/comments");
   };
+
+  const addToSaved = async () => {
+    try {
+      await fetch(`${host}/saved/addtosaved`, {
+        method: 'PATCH',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "email": currentUserEmail,
+          "post": id
+        })
+      });
+      setisSaved(!isSaved);
+    } catch (error) {
+      alert(error.message);
+    }
+    if (calledFromSaved) {
+      removedFromPost(id);
+    }
+  }
   return (
     <Container>
       <div className="card" >
         <img src={image} alt="Not Avaliable" />
         <p className='author'>{authorName}</p>
         <p className='timespan'>{timeSpan}</p>
-        <p className='tag'><GoLocation /> {tags}</p>
+        <div className="saved">
+          <p className='tag'><GoLocation /> {tags}</p>
+          <span onClick={addToSaved} className='bookmark'>{isSaved ? <BsBookmarks /> : <BsBookmarksFill />}</span>
+        </div>
         <p className='name'>{name}</p>
         <p className='description'>
           {desc ? desc.length > 120 ? desc.substring(0, 120) : desc : ""}
@@ -118,8 +160,8 @@ export default function Cards({ id, email, fetchAllData, showDelete, image, auth
             ? <p className='like'>{isLiked ? <AiFillLike onClick={handleLike} />
               : <AiOutlineLike onClick={handleLike} />}
               {noOfLikes} LIKE  <FcComments onClick={handleClick} /> {noOfComments} COMMENTS
-              <span className='edit'>{showDelete ? <FiEdit onClick={handleEdit} title="Click to edit this memory." /> : ""}</span>
-              <span className='delete'>{showDelete ? <AiOutlineDelete onDoubleClick={handleDelete} title='Double click to delete this memory.' /> : ""}</span>
+              <span className='edit'>{!calledFromSaved && showDelete ? <FiEdit onClick={handleEdit} title="Click to edit this memory." /> : ""}</span>
+              <span className='delete'>{!calledFromSaved && showDelete ? <AiOutlineDelete onDoubleClick={handleDelete} title='Double click to delete this memory.' /> : ""}</span>
             </p> : ""
         }
       </div>
@@ -151,7 +193,7 @@ justify-content: space-around;
       img{
         width: 17rem;
         height: 10rem;
-        filter: brightness(50%);
+        filter: brightness(70%);
       }
       .author{
         font-weight: 900;
@@ -168,20 +210,32 @@ justify-content: space-around;
         position: relative;
         top: -8.4rem;
       }
-      .tag{
-        font-weight: 100;
-        font-size: 0.8rem;
-        margin: 0 0 0 1rem;
-        position: relative;
-        top: -1.4rem;
-        color : #242323;
-        svg{
+      .saved{
+        display: flex;
+        flex-direction: row;
+        .bookmark{
+          svg{
+            position: relative;
+            bottom: 3.5vh;
+            left: 8.5vw;
+            cursor: pointer;
+          }
+        }
+        .tag{
+          font-weight: 100;
           font-size: 0.8rem;
+          margin: 0 0 0 1rem;
           position: relative;
-          top: 0.1rem;
-          color: #242323;
-        }
-        }
+          top: -1.4rem;
+          color : #242323;
+          svg{
+            font-size: 0.8rem;
+            position: relative;
+            top: 0.1rem;
+            color: #242323;
+          }
+          }
+      }
       .name{
         font-weight: 600;
         font-size: 1rem;
